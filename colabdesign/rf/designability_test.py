@@ -173,27 +173,23 @@ def main(argv):
         rmsd = out["rmsd"][-1]
         if rmsd < best["rmsd"]:
           best = {"design":m,"n":n,"rmsd":rmsd}
-        # MODIFICATION 1: Use zero-padded formatting for the all_pdb files
-        af_model.save_current_pdb(f"{o.loc}/all_pdb/design{m:03d}_n{n:03d}.pdb")
+        af_model.save_current_pdb(f"{o.loc}/all_pdb/design{m}_n{n}.pdb")
         af_model._save_results(save_best=True, verbose=False)
         af_model._k += 1
-        score_line = [f'design:{m:03d} n:{n:03d}',f'mpnn:{out["score"][n]:.3f}']
+        score_line = [f'design:{m} n:{n}',f'mpnn:{out["score"][n]:.3f}']
         for t in af_terms:
           score_line.append(f'{t}:{out[t][n]:.3f}')
         print(" ".join(score_line)+" "+out["seq"][n])
         line = f'>{"|".join(score_line)}\n{out["seq"][n]}'
         fasta.write(line+"\n")
       data += [[out[k][n] for k in labels] for n in range(o.num_seqs)]
-      # MODIFICATION 2: Use zero-padded formatting for the best_design files
-      af_model.save_pdb(f"{o.loc}/best_design{m:03d}.pdb")
+      af_model.save_pdb(f"{o.loc}/best_design{m}.pdb")
 
   # save best
   with open(f"{o.loc}/best.pdb", "w") as handle:
-    # MODIFICATION 3: Use zero-padded formatting for the best design reference
-    remark_text = f"design {best['design']:03d} N {best['n']:03d} RMSD {best['rmsd']:.3f}"
+    remark_text = f"design {best['design']} N {best['n']} RMSD {best['rmsd']:.3f}"
     handle.write(f"REMARK 001 {remark_text}\n")
-    # MODIFICATION 4: Use zero-padded formatting for reading the best design file
-    handle.write(open(f"{o.loc}/best_design{best['design']:03d}.pdb", "r").read())
+    handle.write(open(f"{o.loc}/best_design{best['design']}.pdb", "r").read())
     
   labels[2] = "mpnn"
   df = pd.DataFrame(data, columns=labels)
